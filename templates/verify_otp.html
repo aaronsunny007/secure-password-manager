@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .verify-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            padding: 2rem;
+            width: 100%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            margin: auto;
+        }
+        .verify-icon {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 1.5rem;
+        }
+        .verify-title {
+            color: #2d3748;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+        .verify-text {
+            color: #4a5568;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 0.8rem;
+            width: 100%;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .resend-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        .resend-text {
+            color: #718096;
+            margin-bottom: 1rem;
+        }
+        .timer {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+        .otp-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        .otp-input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 1.5rem;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .otp-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            outline: none;
+        }
+        .alert {
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+        }
+        .back-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .back-link:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+        .form-control {
+            border-radius: 10px;
+            padding: 0.8rem;
+            border: 2px solid #e1e1e1;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .form-label {
+            font-weight: 500;
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="verify-container">
+            <!-- <a href="{{ url_for('dashboard') }}" class="back-link">
+                <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+            </a> -->
+            
+            <i class="bi bi-shield-lock verify-icon"></i>
+            <h2 class="verify-title">Verify OTP</h2>
+            <p class="verify-text">
+                Please enter the 6-digit OTP sent to your registered email address to complete the verification.
+            </p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('verify_otp') }}" id="otpForm">
+                <div class="otp-inputs">
+                    <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required>
+                    <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required>
+                    <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required>
+                    <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required>
+                    <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required>
+                    <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required>
+                </div>
+                <input type="hidden" name="otp" id="otpInput">
+                <button type="submit" class="btn btn-primary">Verify OTP</button>
+            </form>
+
+            <div class="resend-section">
+                <p class="resend-text">Didn't receive the OTP?</p>
+                <p class="timer" id="countdown">Resend OTP in: <span id="time">60</span>s</p>
+                <button type="button" class="btn btn-link" id="resendBtn" disabled onclick="resendOTP()">
+                    Resend OTP
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let timeLeft = 60;
+        const timerDisplay = document.getElementById('time');
+        const resendButton = document.getElementById('resendBtn');
+        const countdownElement = document.getElementById('countdown');
+        const otpInputs = document.querySelectorAll('.otp-input');
+        const otpForm = document.getElementById('otpForm');
+        const otpInput = document.getElementById('otpInput');
+
+        // Handle OTP input
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value.length === 1) {
+                    if (index < otpInputs.length - 1) {
+                        otpInputs[index + 1].focus();
+                    }
+                }
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            });
+        });
+
+        // Handle form submission
+        otpForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const otp = Array.from(otpInputs).map(input => input.value).join('');
+            otpInput.value = otp;
+            otpForm.submit();
+        });
+
+        function startTimer() {
+            const timer = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    resendButton.disabled = false;
+                    countdownElement.style.display = 'none';
+                    resendButton.style.display = 'block';
+                }
+            }, 1000);
+        }
+
+        function resendOTP() {
+            fetch('/resend-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    timeLeft = 60;
+                    timerDisplay.textContent = timeLeft;
+                    countdownElement.style.display = 'block';
+                    resendButton.style.display = 'none';
+                    resendButton.disabled = true;
+                    startTimer();
+                }
+            });
+        }
+
+        // Start the timer when the page loads
+        startTimer();
+    </script>
+</body>
+</html>

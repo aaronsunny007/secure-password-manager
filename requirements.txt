@@ -1,0 +1,7 @@
+Flask
+Flask-Mail
+cryptography
+bcrypt
+pyotp
+mysql-connector-python
+python-dotenv
