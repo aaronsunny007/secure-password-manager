@@ -40,3 +40,28 @@ secure-password-manager/
 │   ├── reset_password.html
 │   ├── verify.html
 │   └── verify_otp.html
+
+## Database Setup
+
+This project uses MySQL as the backend database.
+
+To run locally, create a database named `pwdmngr` and run the following SQL:
+
+```sql
+CREATE DATABASE pwdmngr;
+USE pwdmngr;
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(100),
+    email VARCHAR(100),
+    password TEXT
+);
+
+CREATE TABLE passwords (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    service VARCHAR(100),
+    username VARCHAR(100),
+    password TEXT
+);
