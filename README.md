@@ -65,3 +65,11 @@ CREATE TABLE passwords (
     username VARCHAR(100),
     password TEXT
 );
+
+## Tech Stack
+- Python (Flask)
+- MySQL
+- HTML & CSS
+- Cryptography (Fernet)
+- bcrypt (password hashing)
+- Flask-Mail (email service)
